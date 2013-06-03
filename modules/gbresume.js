@@ -99,7 +99,7 @@ var actions = {
   },
   portrait: function(c){
       clearTelnetScreen(c);
-      readFileAndWrite(__dirname+'/../assets/greg.txt',c);
+      readFileAndWrite(__dirname+'/../assets/contact.txt',c);
   },
   quit:function(c){
       utils.wtc(c, "You sure? [Y/N] ? please, don't (there's an easter egg, stay a little longer...  !!! :D)");
