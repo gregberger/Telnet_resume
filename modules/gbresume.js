@@ -1,8 +1,10 @@
-/**
- * Date: 2/06/13
- * Greg Berger
- * Time: 00:23
+/*
+ * Copyright © 2013 Gregory Berger <greg@paperpixel.net>
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See the COPYING file for more details.
  */
+
 var util = require('util');
 var fs = require('fs');
 var mailer = require('./nodemailer');
@@ -32,10 +34,12 @@ var utils = {
         var html = '';
         var att = [];
         if(what == 'cv'){
+	    console.log('sending PDF resume to '+to);
             subject = "[Gregory Berger] Curriculum Vitae";
             html = "<h2>You requested my resume</h2><p>Here it is!</p><p>I hope we can meet soon.</p><br />Have a nice day ! <br /><br /> G. Berger";
             att = [{fileName:"CV_Gregory_Berger.pdf", filePath: __dirname+'/../assets/CV_Gregory_Berger.pdf'}];
         }else{
+	    console.log("receiving bitbucket grant request from ",from);
             subject = 'Please grant me an access to your bitbucket';
             html = "You've got to grant an access to "+from;
         }
