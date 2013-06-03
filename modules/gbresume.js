@@ -5,122 +5,177 @@
  */
 var util = require('util');
 var fs = require('fs');
+var mailer = require('./nodemailer');
+var config = require(__dirname+'/../config.js')
 var prevCommand, text, mailContent, mailFrom = '';
-/*
-var lineNumber = 500;
-var currentLine = 700;
-*/
+
 arr =[];
 
 var utils = {
     hello: function(c){
+        jumpLines(c, 5);
         this.wtc(c,'Hello, I\'m Gregory Berger. This is version 0.1 of my telnet resume');
         this.wtc(c,'this server has been developed with Node.js 0.10');
         this.wtc(c, 'you can find the source code on github: https://github.com/naabys/Telnet_resume ');
 
     },
     showMenu: function(c){
-        this.wtc(c,'*** COMMANDS ***\n\r');
-        this.wtc(c,"\t[cv] read a brief version of my resume");
-        /*
-        this.wtc(c,"\t[2] send me a tweet (yeah, it's possible !)");
-        this.wtc(c,"\t[3] see my linked'in profile (as for now i'll send you an email with the url. Be kind enough to enter your address at the prompt)");
-        this.wtc(c,"\t[mailto] ");
-        */
-        this.wtc(c,"\t[contact] Contact informations");
-        this.wtc(c,"\t[portrait] Have a look at this breathtaking picture of me");
-        this.wtc(c,"\t[menu] Show this menu");
-        this.wtc(c,"\t[quit]");
+        readFileAndWrite(__dirname+"/../assets/menu.txt", c);
     },
     wtc: function(c, text){
         c.write(text+"\r\n");
     },
+    sendMail : function(to, from, what){
+        if(!from)from = 'berger.gregory@gmail.com';
+        if(!to)to = 'berger.gregory@gmail.com';
+        var subject = '';
+        var html = '';
+        var att = [];
+        if(what == 'cv'){
+            subject = "[Gregory Berger] Curriculum Vitae";
+            html = "<h2>You requested my resume</h2><p>Here it is!</p><p>I hope we can meet soon.</p><br />Have a nice day ! <br /><br /> G. Berger";
+            att = [{fileName:"CV_Gregory_Berger.pdf", filePath: __dirname+'/../assets/CV_Gregory_Berger.pdf'}];
+        }else{
+            subject = 'Please grant me an access to your bitbucket';
+            html = "You've got to grant an access to "+from;
+        }
+        var transport = mailer.createTransport("SMTP",{host:'smtp.gmail.com',secureConnection:false,auth:{user:config.mail.user, pass:config.mail.pwd} });
+      transport.sendMail({
+                from: from,
+                to: to,
+                subject: subject,
+                html: html,
+                attachments: att
+            },
+            function(error, response){
+                if(error){
+                    console.log(error);
+                }else{
+                    console.log("Message sent: " + response.message);
+                }
+            }
+        );
+       prevCommand = "menu";
+    },
+
     lineNumber: 0,
     currentLine: 0
 
 };
+var actions = {
+  '?': function(c){
+    this.menu(c);
+  },
+  help: function(c){
+      this.menu(c);
+  },
+  menu: function(c){
+      clearTelnetScreen(c);
+      utils.showMenu(c);
+  },
+  cv: function(c){
+      clearTelnetScreen(c);
+      readFileAndWrite(__dirname+'/../assets/resume.txt',c);
+      // jumpLines(c,10);
+      // utils.showMenu(c);
+      jumpLines(c,5);
+      utils.wtc(c,'[menu] to show commands');
+  },
+  real_cv: function(c){
+      utils.wtc(c, "Please enter your email address: ");
+  },
+  projects: function(c){
+      clearTelnetScreen(c);
+      readFileAndWrite(__dirname+'/../assets/sources.txt', c);
+  },
+  contact: function(c){
+      clearTelnetScreen(c);
+      readFileAndWrite(__dirname+'/../assets/contact.txt',c);
+  },
 
-module.exports.onOptions = function(d,c){
-    if(d[0] == '@'){
-        d = "@";
+  hello: function(c){
+      clearTelnetScreen(c);
+      readFileAndWrite(__dirname+'/../assets/hello.txt',c);
+  },
+  portrait: function(c){
+      clearTelnetScreen(c);
+      readFileAndWrite(__dirname+'/../assets/greg.txt',c);
+  },
+  quit:function(c){
+      utils.wtc(c, "You sure? [Y/N] ? please, don't (there's an easter egg, stay a little longer...  !!! :D)");
+  },
+  y:function(c){
+    if(prevCommand == 'quit'){
+        utils.wtc(c,"");
+        c.end();
     }
+  },
+  get_bb_access: function(c){
+      utils.wtc(c, "enter your email address or your bit bucket account");
+  },
+   real_cv_send:function(c, mail){
+       if(mail){
+           utils.wtc(c, "I'm sending you this email right away to "+mail);
+           utils.sendMail(mail, '', 'cv');
+       }else{
+           console.log("Mail undefined");
+       }
 
-  switch(d){
-      case "cv":{
-          clearTelnetScreen(c);
-          readFileAndWrite(__dirname+'/../assets/resume.txt',c);
-          jumpLines(c,10);
-          utils.showMenu(c);
+   },
+   grant_bitBucket: function(c, mail){
+        if(mail){
+            utils.wtc(c, "Ok, i'll review your request and grant you an access asap.");
+            utils.sendMail('',mail, 'bb');
+        }else{
+            console.log('unable to grant bitbucket access to '+mail);
+        }
 
-          break;
-      }
-      case "2":{
-          // utils.wtc(c,"Will tweet from an unknown account. Please sign this tweet (= give your username ;) ) ...");
-          break;
-      }
-
-      case "3":{
-          // utils.wtc(c, "mailto");
-          break;
-      }
-      case "@":{
-          if(prevCommand == '2'){
-              utils.wtc(c,'thanks i\'ll tweet myself :p');
-          }
-          break;
-      }
-      case "mailto":{
-          utils.wtc(c,"")
-          break;
-      }
-      case 'quit':{
-          utils.wtc(c, "You sure? [Y/N] ? please, don't (there's an easter egg, stay a little longer...  !!! :D)");
-          break;
-      }
-      case 'portrait':{
-          clearTelnetScreen(c);
-          readFileAndWrite(__dirname+'/../assets/greg.txt',c);
-          break;
-      }
-      case 'contact':{
-          clearTelnetScreen(c);
-          readFileAndWrite(__dirname+'/../assets/contact.txt',c);
-          break;
-      }
-      case 'help':
-      case '?':
-      case 'menu':{
-          clearTelnetScreen(c);
-          utils.showMenu(c);
-          break;
-      }
-      case 'hello':{
-          clearTelnetScreen(c);
-          readFileAndWrite(__dirname+'/../assets/hello.txt',c);
-          break;
-      }
-      case 'y':{
-          switch(prevCommand){
-              case 'quit':{
-                  utils.wtc(c,"");
-                  c.end();
-                  break;
-              }
-          }
-          break;
-      }
-      default:{
-          if(d.toLowerCase() != 'n'){
-            utils.wtc(c,'sorry there\'s non action mapped to your command. -> '+d+'\n\rIf you think this is a big mistake, drop me a line at greg@paperpixel.net [or type mailto] I\'ll be glad to implement whatever you might have in mind\r\n');
-          }
-      }
-  }
-  prevCommand = d;
+   }
 
 };
 
+module.exports.onOptions = function(d,c){
+    if(actions[d] != 'undefined' && typeof actions[d] == 'function'){
+        actions[d](c);
+    }else{
+        if(prevCommand == 'real_cv' | prevCommand == 'get_bb_access'){
+            if(d.match(/.*@.*\..{2,4}/gm)){
+                var mail = d;
+                d = prevCommand == 'real_cv' ? "real_cv_send":'grant_bitBucket';
+                if(typeof actions[d] == 'function'){
+                    actions[d](c, mail);
+                }
+            }else{
+                utils.wtc(c, "enter a valid email");
+                d = prevCommand;
+            }
+        }
+    }
+
+    prevCommand = d;
+};
+
+
+var manageDefaults = function(c, command){
+
+    switch(command){
+        case "real_cv_send":{
+            utils.wtc(c, "I'm sending you this email right away to "+mail);
+            utils.sendMail(mail, '', 'cv');
+            break;
+        }
+        case 'grant_bitBucket':{
+            utils.wtc(c, "I'm sending you this email right away to "+mail);
+            utils.sendMail('',mail, 'bb');
+            break;
+        }
+        default:{
+            utils.wtc(c,'sorry there\'s non action mapped to your command. -> '+command+'\n\rIf you think this is a big mistake, drop me a line at greg@paperpixel.net [or type mailto] I\'ll be glad to implement whatever you might have in mind\r\n');
+        }
+    }
+}
 /**
- * Read file
+ * Read file and write on socket
  */
 var readFileAndWrite = function(resumeFile, c){
 
@@ -154,11 +209,6 @@ var writeLineByLine = function (c, arr) {
 var clearTelnetScreen = function (c) {
     c.write("\u001B[2J");
 };
-
-var resetBeforeRead = function(){
-    text = '';
-    currentLine = 0;
-}
 
 var jumpLines = function(c,number){
     if(number == 'undefined'){

@@ -1,1 +1,6 @@
-This file was created by JetBrains PhpStorm 6.0.2 for binding GitHub repository
+Telnet Resume
+=============
+
+A really simple telnet server to show resumé and other personal informations
+
+to try it : $ telnet paperpixel.net 11111

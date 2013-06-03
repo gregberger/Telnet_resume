@@ -5,7 +5,8 @@ var resumeFile = './assets/resume.txt';
 var port = 11111;
 var server = net.createServer();
 var c;
-var lineBuffer = '';
+var lineBuffer = {};
+subscribers = [];
 
 server.listen(port, function(){
     console.log("listening on port "+port);
@@ -13,21 +14,34 @@ server.listen(port, function(){
 });
 
 server.on('connection',function(connex){
+    console.log("New connection");
+    subscribers.push(connex);
     c =connex;
     hi(connex);
     connex.on('data', function(data){
-        lineBuffer+=data;
 
-        if(lineBuffer.indexOf('\n') != -1 || lineBuffer.indexOf('\r') != -1){
-            lineBuffer = lineBuffer.replace(/\r\n|\n\r/gm,"");
-            resume.onOptions(lineBuffer.toLowerCase(),connex);
-            lineBuffer = '';
+        lineBuffer[connex]+=data;
+
+        if(lineBuffer[connex].indexOf('\n') != -1 || lineBuffer[connex].indexOf('\r') != -1){
+            lineBuffer[connex] = lineBuffer[connex].replace(/\r\n|\n\r/gm,"");
+            resume.onOptions(lineBuffer[connex].toLowerCase(),subscribers[subscribers.indexOf(connex)]);
+            lineBuffer[connex] = '';
         }
 
     });
+    connex.on('end', function(){
+       closeConnex(connex);
+    });
+
+
 });
 
-
+function closeConnex(connex) {
+    var i = subscribers.indexOf(connex);
+    if (i != -1) {
+        subscribers.splice(i, 1);
+    }
+}
 var hi = function(c){
     if(!c | typeof c == 'undefined' | typeof c != 'object'){
         console.log('something bad happend');

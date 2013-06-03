@@ -1,0 +1,7 @@
+* The code for this telnet server : https://github.com/naabys/Telnet_resume
+
+* Hashtag Lamps : https://github.com/RElabLiege/hashtag-lamp
+
+* Alliance stat tool : a backend web application to manage members of the Alliance Of Voluntary Service Organisations
+    NB: this repository is private. If you'd like to have an access, drop me a line: greg@paperpixel.net or type [get_bb_access]
+

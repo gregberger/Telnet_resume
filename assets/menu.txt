@@ -1,0 +1,10 @@
+
+
+*** COMMANDS ***
+    [cv] read a brief version of my resume
+    [real_cv] All right, the expurged version here might be a little too short. I can e-mail a more complete PDF version of my resume
+    [contact] Contact informations
+    [projects] see some of my projects on github/bitbucket
+    [menu] Show this menu
+    [quit]
+
