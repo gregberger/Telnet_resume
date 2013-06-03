@@ -47,6 +47,7 @@ var hi = function(c){
         console.log('something bad happend');
         return;
     }
+    resume.clearTelnetScreen(c);
     resume.utils.hello(c);
     resume.utils.showMenu(c);
 }
