@@ -219,5 +219,6 @@ var jumpLines = function(c,number){
     }
 }
 
+module.exports.clearTelnetScreen = clearTelnetScreen;
 module.exports.readFile = readFileAndWrite;
 module.exports.utils = utils;
