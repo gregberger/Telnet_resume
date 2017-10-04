@@ -8,9 +8,17 @@
 var util = require('util');
 var fs = require('fs');
 var mailer = require('nodemailer');
-var config = require(__dirname+'/../config.js')
+// var config = require(__dirname+'/../config.js')
 var prevCommand, text, mailContent, mailFrom = '';
 var sleep = require('sleep');
+
+var config = {
+  mail:{
+    user: process.env.MAIL_USERNAME,
+    pwd : process.env.MAIL_PWD
+
+  }
+};
 
 arr =[];
 
@@ -199,7 +207,7 @@ var readFileAndWrite = function(resumeFile, c){
 }
 
 var writeLineByLine = function (c, arr) {
-
+    
     if ( arr.length > 0) {
         c.write(arr[utils.currentLine] + "\r\n");
         arr.splice(0,1);
