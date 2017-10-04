@@ -7,9 +7,10 @@
 
 var util = require('util');
 var fs = require('fs');
-var mailer = require('./nodemailer');
+var mailer = require('nodemailer');
 var config = require(__dirname+'/../config.js')
 var prevCommand, text, mailContent, mailFrom = '';
+var sleep = require('sleep');
 
 arr =[];
 
@@ -18,7 +19,7 @@ var utils = {
         jumpLines(c, 5);
         this.wtc(c,'Hello, I\'m Gregory Berger. This is version 0.1 of my telnet resume');
         this.wtc(c,'this server has been developed with Node.js 0.10');
-        this.wtc(c, 'you can find the source code on github: https://github.com/naabys/Telnet_resume ');
+        this.wtc(c, 'you can find the source code on github: https://github.com/gregberger/Telnet_resume ');
 
     },
     showMenu: function(c){
@@ -199,14 +200,16 @@ var readFileAndWrite = function(resumeFile, c){
 
 var writeLineByLine = function (c, arr) {
 
-    if (utils.currentLine < arr.length) {
+    if ( arr.length > 0) {
         c.write(arr[utils.currentLine] + "\r\n");
-        utils.currentLine++;
-        setTimeout(writeLineByLine(c,arr), 300);
+        arr.splice(0,1);
+        sleep.msleep(150);
+        writeLineByLine(c,arr);
+
     }
     else {
-        utils.currentLine = 0;
-       // c.write(footerText + '\r\n');
+    //    utils.currentLine = 0;
+        c.write(footerText + '\r\n');
     }
 };
 

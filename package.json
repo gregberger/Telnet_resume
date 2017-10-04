@@ -1,0 +1,24 @@
+{
+  "name": "telnet_resume",
+  "version": "1.0.0",
+  "description": "Telnet Resume =============",
+  "main": "resume_server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "node resume_server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gregberger/Telnet_resume.git"
+  },
+  "author": "",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/gregberger/Telnet_resume/issues"
+  },
+  "homepage": "https://github.com/gregberger/Telnet_resume#readme",
+  "dependencies": {
+    "nodemailer": "^4.1.2",
+    "sleep": "^5.1.1"
+  }
+}

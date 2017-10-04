@@ -21,7 +21,7 @@ server.listen(port, function(){
 server.on('connection',function(connex){
     console.log("New connection");
     subscribers.push(connex);
-    c =connex;
+  //  c =connex;
     hi(connex);
     connex.on('data', function(data){
 
@@ -56,5 +56,3 @@ var hi = function(c){
     resume.utils.hello(c);
     resume.utils.showMenu(c);
 }
-
-
